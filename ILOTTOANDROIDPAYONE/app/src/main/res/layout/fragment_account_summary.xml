@@ -1,0 +1,266 @@
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context="com.smartdevsolutions.ilottoandroid.Fragments.AccountSummaryFragment">
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="2dp"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:weightSum="1">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <Spinner
+                        android:id="@+id/cashier_spinner"
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <EditText
+                        android:id="@+id/accountfromdate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:focusable="false"
+                        android:hint="FROM DATE"
+                        android:textSize="15sp"
+                        android:inputType="date"
+                        android:maxLines="1" />
+                    <EditText
+                        android:id="@+id/accounttodate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight=".5"
+                        android:focusable="false"
+                        android:hint="TO DATE"
+                        android:textSize="15sp"
+                        android:inputType="date"
+                        android:maxLines="1" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_weight="0.5"
+                    android:weightSum="1">
+
+                    <Button
+                        android:id="@+id/acctgobutton"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="0.5"
+                        android:text="GO"
+                        android:background="@color/green"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+
+                    <Button
+                        android:id="@+id/acctprintbutton"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_weight="0.5"
+                        android:text="PRINT"
+                        android:background="@color/yellow"
+                        android:textColor="@color/white"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_weight="40"
+            android:background="#222">
+
+        </View>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <TextView
+                        android:id="@+id/stake"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text="STAKE"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/accountstakes"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <TextView
+                        android:id="@+id/sanc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text="CANCELLED"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/accountcancelled"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <TextView
+                        android:id="@+id/sls"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text="SALES"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/accountsales"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <TextView
+                        android:id="@+id/wins"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text="WINNINGS"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/accountwinnings"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <View
+                    android:id="@+id/myview"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+
+                    android:background="#222">
+                </View>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+                    <TextView
+                        android:id="@+id/bal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text="BALANCE"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/accountbalance"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textStyle="bold"
+                        android:layout_weight=".5"
+                        android:gravity="center_vertical"
+                        android:text=""
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <View
+                    android:id="@+id/myview2"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+
+                    android:background="#222">
+                </View>
+
+
+            </LinearLayout>
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+</RelativeLayout>
+
+</FrameLayout>

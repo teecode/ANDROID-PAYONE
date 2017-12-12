@@ -1,0 +1,84 @@
+<resources>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_TerminalNumber">Terminal No</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <string name="changepassword">Change Password</string>
+    <string name="updateprofile">Update Profile</string>
+    <string name="logout">LOG OUT</string>
+
+    <string name="error_invalid_termno">This Terminal No is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+
+    <string name="bet1requestentry">BET 1</string>
+    <string name="bet2requestentry">BET 2</string>
+    <string name="betamount">STK/LN</string>
+    <string name="addbetbuttonlabel">ADD BET</string>
+
+
+
+    <string name="service_url">https://portal.winnersgoldenchance.com/</string>
+    <string name="service_authentication_controller">Authenticate</string>
+    <string name="service_opendailygame_controller">dailygames</string>
+    <string name="service_playgame_controller">PlayGame</string>
+    <string name="service_winningnumber_controller">WinningNumber</string>
+    <string name="service_winningnumberfordate_controller">WinningNumberForDate/</string>
+    <string name="service_checkTicket_controller">TicketFind/</string>
+    <string name="service_CustomersInShop_controller">CustomersInShop/</string>
+    <string name="service_AccountSummaryCustomer_controller">AccountSummaryCustomer</string>
+    <string name="service_CustomerPasswordUpdate_controller">CustomerPasswordUpdate</string>
+    <string name="service_TicketsCustomerDate_controller">TicketsCustomerDate</string>
+    <string name="service_TicketPayment_controller">TicketPayment/</string>
+    <string name="service_CustomerStatusUpdate_controller">CustomerStatusUpdate</string>
+    <string name="service_CustomerCrediting_controller">CustomerCrediting</string>
+
+
+
+
+
+
+    <string name="service_version">0.0.1</string>
+
+
+
+
+
+    <string-array name="Manager_Menu">
+        <item>Play</item>
+        <item>WInning Numbers</item>
+        <item>Check Ticket </item>
+        <item>Account</item>
+        <item>Profile</item>
+        <item>Registered Slips</item>
+        <item>Credit Management</item>
+        <item>Cashier Blocking</item>
+        <item>Summary Sheet</item>
+        <item>Logout</item>
+
+    </string-array>
+    <string name="header_string">Welcome</string>
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
+    <string name="action_websearch">Web search</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+
+
+    <string name="str_bat_tip">Low battery is less than</string>
+
+
+    <string name="str_printer_state">STATE</string>
+    <string name="str_printer_printing">Printing</string>
+    <string name="str_printer_lowpower">Low power</string>
+    <string name="str_printer_nopaper">No paper</string>
+    <string name="str_printer_bufferfull">Buffer full</string>
+    <string name="str_printer_buffernull">Buffer null</string>
+    <string name="str_printer_hightemperature">High temperature</string>
+
+
+</resources>

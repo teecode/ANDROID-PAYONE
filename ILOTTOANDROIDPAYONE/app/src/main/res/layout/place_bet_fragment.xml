@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/place_bet_gamedscrp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="70"
+                android:gravity="left|center"
+                android:text="GAME:"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/place_bet_game_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="30"
+                android:gravity="center|left"
+                android:text="@string/bet_type_game_name"
+                android:textColor="@color/blue"
+                android:textSize="15sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <TextView
+                android:id="@+id/place_bet_betdscrp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="70"
+                android:gravity="left|center"
+                android:text="BET-TYPE:"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/place_bet_bet_tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="30"
+                android:gravity="center|left"
+                android:textColor="@color/blue"
+                android:text="@string/bet_type_game_name"
+                android:textSize="15sp" />
+
+
+        </LinearLayout>
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_weight="40"
+            android:background="#222">
+        </View>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_margin="3dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/otherentriesgrame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/bet1Edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/bet1requestentry"
+                    android:textSize="18sp"
+                    android:imeActionId="@+id/betiedittxaction"
+                    android:imeActionLabel="ADD"
+                    android:imeOptions="actionGo"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:maxLines="1"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:nextFocusDown = "@+id/bet2Edittext"/>
+
+                <EditText
+                    android:id="@+id/bet2Edittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/bet2requestentry"
+                    android:textSize="18sp"
+                    android:imeActionId="@+id/bet2edittxaction"
+                    android:imeActionLabel="ADD"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:maxLines="1"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:nextFocusDown = "@+id/betstakeperlineEdittext"/>
+
+                <EditText
+                    android:id="@+id/betstakeperlineEdittext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:hint="@string/betamount"
+                    android:imeActionId="@+id/stakeperlineedittxaction"
+                    android:imeActionLabel="ENTER"
+                    android:imeOptions="actionNone"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/playbuttonframe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                >
+
+
+                <Button
+                    android:id="@+id/addtobetsbutton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:textSize="15sp"
+                    android:background="@color/green"
+                    android:textColor="@color/white"
+                    android:text="ADD" />
+
+                <Button
+                    android:id="@+id/playbutton"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:textSize="15sp"
+                    android:background="@color/yellow"
+                    android:textColor="@color/white"
+                    android:text="PLAY" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.3">
+
+
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/bet1frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:orientation="horizontal"
+                        android:weightSum="100">
+
+                        <TextView
+                            android:id="@+id/bet1textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="98"
+                            android:gravity="center_vertical"
+                            android:text="BET1"
+                            android:textSize="18sp" />
+
+                        <Button
+                            android:id="@+id/deletebet1button"
+                            android:layout_width="40dp"
+                            android:layout_height="30dp"
+
+                            android:background="@drawable/delete" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/bet2frame"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:orientation="horizontal"
+                        android:weightSum="100">
+
+                        <TextView
+                            android:id="@+id/bet2textview"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="98"
+                            android:gravity="center_vertical"
+                            android:text="BET2"
+                            android:textSize="20sp" />
+
+                        <Button
+                            android:id="@+id/deletebet2button"
+                            android:layout_width="40dp"
+                            android:layout_height="30dp"
+
+                            android:background="@drawable/delete" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/stakeamountframe"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/amounttextview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_margin="5dp"
+                            android:gravity="center_vertical"
+                            android:textSize="20sp" />
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+            </ScrollView>
+        </LinearLayout>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

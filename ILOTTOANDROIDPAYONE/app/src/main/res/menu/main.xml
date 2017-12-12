@@ -1,0 +1,16 @@
+
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/home" android:icon="@drawable/home" android:title="@string/home" />
+    <item android:id="@+id/play" android:icon="@drawable/play" android:title="@string/play" />
+    <item android:id="@+id/winningnumber" android:icon="@drawable/winningnumber" android:title="@string/winningnumber" />
+    <item android:id="@+id/checkticket" android:icon="@drawable/checkticket"  android:title="@string/checkticket"  />
+    <item android:id="@+id/account" android:icon="@drawable/account" android:title="@string/account" />
+    <item android:id="@+id/profile" android:icon="@drawable/profile" android:title="@string/profile"  />
+    <item android:id="@+id/registeredslips" android:icon="@drawable/registeredslips" android:title="@string/registeredslips" />
+    <item android:id="@+id/cashierblocking" android:icon="@drawable/cashierblocking" android:title="@string/cashierblocking" />
+    <item android:id="@+id/creditmanagement" android:icon="@drawable/creditmanagement" android:title="@string/creditmanagement" />
+    <item android:id="@+id/logout"  android:icon="@drawable/logout" android:title="@string/logout"  />
+</menu>
+
+

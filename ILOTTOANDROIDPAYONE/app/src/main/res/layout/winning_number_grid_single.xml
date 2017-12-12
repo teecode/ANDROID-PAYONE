@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/winning_game_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="50"
+            android:gravity="center_horizontal"
+            android:textSize="18sp" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/holo_green_dark"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/winning_numb_label_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="18"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="WINNING NUMBER"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/winning_number_1_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="13"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/winning_number_2_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/winning_number_3_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/winning_number_4_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/winning_number_5_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/winning_machineframe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/black"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/machine_numb_label_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="18"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="MACHINE NUMBER"
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/machine_number_1_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/machine_number_2_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/machine_number_3_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/machine_number_4_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/machine_number_5_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="15"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="10"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#222"
+        >
+    </View>
+
+
+</LinearLayout>
