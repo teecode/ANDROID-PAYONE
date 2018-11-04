@@ -1,0 +1,1009 @@
+package com.smartdevsolutions.ilottoandroid.Fragments;
+
+import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.PowerManager;
+import android.support.design.widget.Snackbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.GridView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.nbbse.mobiprint3.Printer;
+import com.smartdevsolutions.ilottoandroid.ApiResource.DailyGameResource;
+import com.smartdevsolutions.ilottoandroid.R;
+import com.smartdevsolutions.ilottoandroid.UserInterface.winningNumberGridDisplay;
+import com.smartdevsolutions.ilottoandroid.Utility.CallService;
+import com.smartdevsolutions.ilottoandroid.Utility.MyApplication;
+import com.smartdevsolutions.ilottoandroid.Utility.WinningNumber;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import android_serialport_api.CharacterSequence;
+import hdx.HdxUtil;
+
+/**
+ * Created by T360-INNOVATIVZ on 30/05/2017.
+ */
+
+public class winningFragment extends SerialPortFragment {
+
+    TextView mdateTextView;
+    Button mButtonGo;
+    Button mPrintButton;
+    GridView mwinningView;
+    ProgressDialog progress;
+    winningNumberGridDisplay adapter;
+    WinningNumberTask winTask;
+    ArrayList<DailyGameResource> mwinningNumbers;
+    private Printer print;
+    private CharacterSequence CharSeq;
+    MyHandler Handler;
+
+    private android_serialport_api.SerialProperties SerialProperties;
+    ExecutorService pool = Executors.newSingleThreadExecutor();
+    PowerManager.WakeLock lock;
+    int printer_status = 0;
+
+
+
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.winning_number_fragment, container, false);
+        SerialProperties = new android_serialport_api.SerialProperties();
+        CharSeq = new CharacterSequence();
+        Handler = new MyHandler();
+        super.viewCreate((MyApplication) getActivity().getApplication());
+
+        HdxUtil.SwitchSerialFunction(HdxUtil.SERIAL_FUNCTION_PRINTER);
+        PowerManager pm = (PowerManager) getActivity().getApplicationContext()
+                .getSystemService(this.getActivity().POWER_SERVICE);
+        //lock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "winningFragment");
+
+        mwinningNumbers = new ArrayList<DailyGameResource>();
+        mdateTextView = (TextView) rootView.findViewById(R.id.winningDateeditText);
+        mButtonGo = (Button)  rootView.findViewById(R.id.winninggobutton);
+        mPrintButton = (Button)  rootView.findViewById(R.id.winningprintbutton);
+        mwinningView =(GridView) rootView.findViewById(R.id.winninggrid);
+        print = Printer.getInstance();
+        showProgress("Fetching Winning Numbers", "Please Wait ...");
+        winTask = new WinningNumberTask("");
+        winTask.execute();
+
+        mButtonGo.setOnClickListener(GoClick );
+        mPrintButton.setOnClickListener(GoPrint );
+
+
+        final Calendar myCalendar = Calendar.getInstance();
+
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+            }
+            public void updateLabel() {
+
+                String myFormat = "yyyy-MM-dd"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+                mdateTextView.setText(sdf.format(myCalendar.getTime()));
+            }
+
+
+        };
+
+        mdateTextView.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(getActivity(), date , myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        return rootView;
+    }
+
+
+    private Button.OnClickListener GoClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if(!mdateTextView.getText().equals(""))
+            {
+                String date = mdateTextView.getText().toString();
+
+
+                if(!date.equals(""))
+                {
+                    showProgress("Fetching Winning Numbers", "Please Wait ...");
+                    winTask = new WinningNumberTask(date);
+                    winTask.execute();
+                }
+
+
+
+            }
+        }
+    };
+
+    public  boolean winningexist(){
+        for (DailyGameResource res:mwinningNumbers
+                ) {
+if(res.getResult()!=null)
+    return true;
+        }
+        return  false;
+            }
+
+    private Button.OnClickListener GoPrint = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            if (mwinningNumbers.size() > 0   && winningexist()) {
+
+
+                //&& Printer_Is_Normal()
+                Handler.sendMessage(Handler.obtainMessage(0, 1,0, null));
+                printWinning();
+            }
+            else
+            {
+                Toast.makeText(getActivity(), "Cannot Print Empty Winnings", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+
+    public boolean checkPrinter()
+    {
+        //print = Printer.getInstance();
+        byte status;
+        status = Get_Printer_Status() ;
+        PrinterPowerOnAndWaitReady();
+        if(!Warning_When_Not_Normal())
+        {
+            PrinterPowerOff();
+            return false;
+        }
+
+        if( (status & SerialProperties.HDX_ST_NO_PAPER1 )>0 )
+        {
+
+            // Log.d(TAG,"huck is not paper");
+            //Toast.makeText(winningFragment.this.getActivity(), getResources().getString(R.string.IsOutOfPaper), Toast.LENGTH_LONG).show();
+            Snackbar.make(this.getView(), getResources().getString(R.string.IsOutOfPaper), Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+        return  true;
+    }
+
+    public boolean checkPrinterStatus()
+    {
+        //print = Printer.getInstance();
+        switch(print.getPrinterStatus())
+        {
+            case Printer.PRINTER_READY:
+                return true;
+            case Printer.PRINTER_NO_PAPER:
+                Toast.makeText(getActivity(), "No Printing Paper " , Toast.LENGTH_SHORT).show();
+                return false;
+            case Printer.PRINTER_ERROR:
+                Toast.makeText(getActivity(), "Printer Error " , Toast.LENGTH_SHORT).show();
+                return false;
+
+            default:
+                Toast.makeText(getActivity(), "Somthing is wrong with printer " , Toast.LENGTH_SHORT).show();
+                return false;
+
+        }
+
+    }
+
+    public  void printWinning1()
+    {
+        try {
+            if (mwinningNumbers.size() > 0) {
+                if (print.getPaperStatus() != 1) {
+                    getActivity().runOnUiThread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            Toast.makeText(getActivity(), "No Paper.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
+
+
+//                File mFile1 = Environment.getExternalStorageDirectory();
+//                String fileName ="gclogo.png";
+//                Uri path = Uri.parse("android.resource://"+ BuildConfig.APPLICATION_ID+"/" + R.drawable.gclogo);
+//                String sdPath = mFile1.getAbsolutePath().toString()+"/"+fileName;
+//                print.printBitmap(path.getPath());
+//                Bitmap Icon = BitmapFactory.decodeResource(getResources(), R.drawable.gctree);
+                //                print.printBitmap(Icon);
+//                print.printBitmap(Icon, Printer.BMP_PRINT_SLOW );
+//                print.printBitmap(Icon, Printer.BMP_PRINT_FAST );
+//                print.printBitmap(is, Printer.BMP_PRINT_SLOW);
+
+                print = Printer.getInstance();
+                InputStream is = getResources().openRawResource(R.raw.gclogoprint);
+                print.printBitmap(is);
+
+//                print.printText(" GOLDEN CHANCE \n     LOTTO ", 2);
+//                print.printText("        WINNING NUMBERS", 1);
+
+
+
+                for (DailyGameResource win : mwinningNumbers) {
+                    if(win.getResult()!=null) {
+                        java.util.Date gamedate = win.getDate();
+                        DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                        String date = format.format(gamedate);
+                        print.printText((win.getGameName() + " [" + date + "]"), 1);
+
+                        print.printText((win.getResult().getWInningBallString()), 2);
+
+                        if (!win.isGhanaGame()) {
+
+                            print.printText((win.getResult().getMachineBallString()), 2);
+                        }
+
+                        print.printText("--------------------------------", 1);
+                    }
+
+
+                }
+
+
+                print.printEndLine();
+                //Toast.makeText(getActivity() ,  "Printing Complete", Toast.LENGTH_SHORT).show();
+//                getActivity().setResult(getActivity().RESULT_OK);
+//                getActivity().finish();
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Toast.makeText(getActivity() ,  "Error Printing ", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public  void printWinning()
+    {
+        new WriteThread(0).start();
+
+    }
+
+
+
+    public void showProgress(  String Title, String Message) {
+        progress = ProgressDialog.show(getActivity(), Title,
+                Message, true);
+    }
+
+    @Override
+    protected void onDataReceived(byte[] buffer, int size, int n) {
+        int i;
+        String strTemp;
+        if(SerialProperties.Status_Start_Falg == true)
+        {
+            for (i = 0; i < size; i++)
+            {
+                SerialProperties.Status_Buffer[getStatus_Buffer_Index()]=buffer[i];
+                setStatus_Buffer_Index(1+i);
+            }
+        }
+
+        if (SerialProperties.ver_start_falg == true) {
+            for (i = 0; i < size; i++) {
+                SerialProperties.strVer.append(String.format("%c",(char) buffer[i]));
+            }
+
+        }
+		/*
+		 * 	public static boolean flow_start_falg = false;
+		byte [] flow_buffer=new byte[300];
+
+		 * */
+
+        StringBuilder str = new StringBuilder();
+        StringBuilder strBuild = new StringBuilder();
+        for (i = 0; i < size; i++) {
+            if(SerialProperties.flow_start_falg == true)
+            {
+                if( (buffer[i] ==0x13) || ( buffer[i] ==0x11)  )
+                {
+                    SerialProperties.flow_buffer[0]= buffer[i];
+
+                }
+            }
+            str.append(String.format(" %x", buffer[i]));
+            strBuild.append(String.format("%c", (char) buffer[i]));
+        }
+        //Log.e(TAG, "onReceivedC= " + strBuild.toString());
+        //Log.e(TAG, "onReceivedx= " + str.toString());
+    }
+
+    public class WinningNumberTask extends AsyncTask<Void, Void, Boolean> {
+
+
+        String url;
+        String debugmessage="";
+
+        private ArrayList<DailyGameResource> Winnings ;
+
+        WinningNumberTask(String date) {
+            if(date.equals("")) {
+                this.url = (getString(R.string.service_url) + getString(R.string.service_winningnumber_controller));
+            }
+            else {
+                this.url = (getString(R.string.service_url) + getString(R.string.service_winningnumberfordate_controller) + date);
+            }
+            Winnings = new ArrayList<DailyGameResource>();
+
+        }
+
+        protected Boolean doInBackground(Void... params) {
+            // TODO: attempt authentication against a network service.
+
+
+            try {
+
+                Gson gson = new Gson();
+                Type type ;
+                CallService mysevice = new CallService(url, "");
+                String response =  mysevice.invokeGetService();
+                if(response != ""   )
+                {
+                    type = new TypeToken<List<WinningNumber>>(){}.getType();
+                    Winnings = gson.fromJson(response, type);
+                    if(Winnings.size()> 0) {
+                        debugmessage = "";
+                        return true;
+                    }
+                    else {
+                        debugmessage = "No winning available for date";
+                        return false;
+                    }
+                }
+                else
+                {
+                    debugmessage += "Poor Network, Please Check Your Network and Try Again!!!";
+                    return false ;
+                }
+
+            } catch (Exception e) {
+                debugmessage = e.getMessage();
+                return false;
+            }
+
+
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+
+            progress.dismiss();
+            if (success) {
+                mwinningNumbers = Winnings;
+                adapter = new winningNumberGridDisplay(getActivity(), Winnings);
+                mwinningView.setAdapter(adapter);
+
+            } else {
+                Toast.makeText(getActivity() ,  debugmessage, Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+
+            progress.dismiss();
+        }
+
+
+
+
+    }
+
+
+    //---------------------------------------------------------------------------
+    private class MyHandler extends Handler {
+        public void handleMessage(Message msg) {
+            if (SerialProperties.stop == true)
+                return;
+            switch (msg.what) {
+                case 0:
+                   mPrintButton.setEnabled(false);
+                    break;
+                case 1 :
+                    mPrintButton.setEnabled(true);
+                    break;
+            }
+        }
+    }
+
+
+    int getStatus_Buffer_Index()
+    {
+        return SerialProperties.Status_Buffer_Index;
+    }
+
+    void setStatus_Buffer_Index(int v)
+    {
+        SerialProperties.Status_Buffer_Index=v;
+    }
+
+    byte Get_Printer_Status()
+    {
+        SerialProperties.Status_Buffer[0]=0;
+        SerialProperties.Status_Buffer[1]=0;
+        SerialProperties.Status_Start_Falg = true;
+        setStatus_Buffer_Index(0);
+        sendCommand(0x1b,0x76);
+        //Log.i(TAG,"Get_Printer_Status->0x1b,0x76");
+        Time_Check_Start();
+
+        while(true)
+        {
+            if(getStatus_Buffer_Index()>0)
+            {
+
+                SerialProperties.Status_Start_Falg = false;
+                //Log.e(TAG,"Get_Printer_Status :"+Status_Buffer[0]);
+                return SerialProperties.Status_Buffer[0] ;
+            }
+            if(TimeIsOver(5))
+            {
+                SerialProperties.Status_Start_Falg = false;
+                //Log.e(TAG,"Get_Printer_Status->TIME OVER:"+Status_Buffer[0]);
+                return (byte)0xff;
+
+            }
+            sleep(50);
+        }
+
+
+    }
+
+    void Time_Check_Start() {
+        SerialProperties.time.setToNow(); // ȡ��ϵͳʱ�䡣
+        SerialProperties.TimeSecond = SerialProperties.time.second;
+
+
+    }
+
+    boolean TimeIsOver(int second) {
+
+        SerialProperties.time.setToNow(); // ȡ��ϵͳʱ�䡣
+        int t = SerialProperties.time.second;
+        if (t < SerialProperties.TimeSecond) {
+            t += 60;
+        }
+
+        if (t - SerialProperties.TimeSecond > second) {
+            return true;
+        }
+        return false;
+    }
+
+    void PrinterPowerOnAndWaitReady()
+    {
+
+        //Status_Buffer_Index=0;
+        //Status_Start_Falg = true;
+        HdxUtil.SetPrinterPower(1);
+        sleep(500);
+    }
+
+    private void sleep(int ms) {
+        // Log.d(TAG,"start sleep "+ms);
+        try {
+            java.lang.Thread.sleep(ms);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // Log.d(TAG,"end sleep "+ms);
+    }
+
+    void PrinterPowerOff()
+    {
+        HdxUtil.SetPrinterPower(0);
+    }
+
+    void Wait_Printer_Ready()
+    {
+        byte status;
+
+        while(true)
+        {
+            status = Get_Printer_Status() ;
+            if(status== 0xff)
+            {
+                //Log.e(TAG," time is out");
+                return ;
+
+            }
+
+            if( (status & SerialProperties.HDX_ST_WORK)>0 )
+            {
+
+                //Log.d(TAG,"printer is busy");
+            }
+            else
+            {
+                //Log.d(TAG," printer is ready");
+                return;
+
+            }
+            sleep(50);
+        }
+    }
+    boolean  Printer_Is_Normal(){
+        byte status;
+
+
+        status = Get_Printer_Status() ;
+
+        if(status== 0xff)
+        {
+            //Log.e(TAG,"huck time is out");
+            SerialProperties.Error_State="huck unkown err";
+            Snackbar.make(this.getView(), "Printing Unknown Error", Snackbar.LENGTH_LONG).show();
+            return  false;
+
+        }
+
+        if( (status & SerialProperties.HDX_ST_NO_PAPER1 )>0 )
+        {
+
+            //Log.d(TAG,"huck is not paper");
+            SerialProperties.Error_State=getResources().getString(R.string.IsOutOfPaper);
+            Snackbar.make(this.getView(), getResources().getString(R.string.IsOutOfPaper), Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+        else if( (status & SerialProperties.HDX_ST_HOT )>0 )
+        {
+            //Log.d(TAG,"huck is too hot");
+            SerialProperties.Error_State=getResources().getString(R.string.PrinterNotNormal1);
+            Snackbar.make(this.getView(), getResources().getString(R.string.PrinterNotNormal1), Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+        else
+        {
+            // Log.d(TAG," huck is ready");
+            return true;
+        }
+
+
+    }
+
+    boolean Warning_When_Not_Normal()
+    {
+        return true;
+    }
+    private void sendCommand(int... command) {
+        try {
+            for (int i = 0; i < command.length; i++) {
+                mOutputStream.write(command[i]);
+                // Log.e(TAG,"command["+i+"] = "+Integer.toHexString(command[i]));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // / sleep(1);
+    }
+
+    public void SendRawFileToUart(int fileID,byte [] command_head,int delay_time,int delay_time2 )
+    {
+        byte[] byteNum = new byte[4];
+        byte[] byteNumCrc = new byte[4];
+        byte[] byteNumLen = new byte[4];
+        int i;
+        int temp;
+        //Log.e(TAG,"  TEST_quck2");
+        flow_begin();
+        try {
+            Resources r =getResources();;
+            InputStream is = r.openRawResource(fileID);
+            int count = is.available();
+            byte[] b = new byte[count];
+            is.read(b);
+            byte SendBuf[] = new byte[count  +1023];
+            Arrays.fill(SendBuf,(byte)0);
+
+            //Log.e("quck2", " read file is .available()= "+ count  );
+            //get command HEAD
+
+
+            //get crc
+            Get_Buf_Sum(b,count,byteNum);// 17	01 7E 00   CRC
+            System.arraycopy(byteNum,0,byteNumCrc,0,4);
+            //Log.e("quck2", "crc0  "+ String.format("0x%02x", byteNum[0] )  );
+            //Log.e("quck2", "crc1  "+ String.format("0x%02x", byteNum[1] )	);
+            //Log.e("quck2", "crc2  "+ String.format("0x%02x", byteNum[2] )	);
+            //Log.e("quck2", "crc3  "+ String.format("0x%02x", byteNum[3] )  );
+
+
+            //get len
+            int2ByteAtr(count,byteNum); //58 54 01 00	LEN
+            System.arraycopy(byteNum,0, byteNumLen,0,4);
+            //Log.e("quck2", "len0  "+ String.format("0x%02x", byteNum[0] )  );
+            //Log.e("quck2", "len1  "+ String.format("0x%02x", byteNum[1] )	);
+           // Log.e("quck2", "len2  "+ String.format("0x%02x", byteNum[2] )	);
+           // Log.e("quck2", "len3  "+ String.format("0x%02x", byteNum[3] )  );
+
+            //send command_head
+            //mOutputStream.write(command_head);
+            //send crc
+            //mOutputStream.write(byteNumCrc);
+            //send len
+            //mOutputStream.write(byteNumLen);
+            //send bin file
+            System.arraycopy(b,0,SendBuf,0, count);
+            temp= (count +63)/64;
+            byte[] databuf= new byte[64];
+            sleep(delay_time);
+            for(i=0;i<temp;i++)
+            {
+                System.arraycopy(SendBuf,i*64,databuf,0,64);
+
+                //if((i%2) == 0)
+                {
+                    //sleep(delay_time2);
+
+                }
+                //Log.e("quck2", " updating ffont finish:"  +((i+1)*100)/temp +"%");
+                SerialProperties.iProgress=((i+1)*100)/temp;
+                //handler.sendMessage(handler.obtainMessage(REFRESH_PROGRESS, 1, 0,null));
+                mOutputStream.write(databuf);
+                flow_check_and_Wait(10);
+                //sleep(delay_time2);
+
+            }
+
+            //Log.e("quck2", "all data have send!!  "   );
+            sleep(3000);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+            sleep(200);
+            flow_end();
+            //HdxUtil.SetPrinterPower(0);
+        }
+
+        //handler.sendMessage(handler.obtainMessage(ENABLE_BUTTON, 1, 0,null));
+    }
+
+    void int2ByteAtr(int pData, byte sumBuf[]) {
+        for (int ix = 0; ix < 4; ++ix) {
+            int offset = ix * 8;
+            sumBuf[ix] = (byte) ((pData >> offset) & 0xff);
+        }
+
+    }
+
+    // 4�ֽ����
+    void Get_Buf_Sum(byte dataBuf[], int dataLen, byte sumBuf[]) {
+
+        int i;
+        long Sum = 0;
+        // byte[] byteNum = new byte[8];
+        long temp;
+
+        for (i = 0; i < dataLen; i++) {
+            if (dataBuf[i] < 0) {
+                temp = dataBuf[i] & 0x7f;
+                temp |= 0x80L;
+
+            } else {
+                temp = dataBuf[i];
+            }
+            Sum += temp;
+            temp = dataBuf[i];
+
+        }
+
+        for (int ix = 0; ix < 4; ++ix) {
+            int offset = ix * 8;
+            sumBuf[ix] = (byte) ((Sum >> offset) & 0xff);
+        }
+
+    }
+    void flow_begin()
+    {
+
+        SerialProperties.flow_start_falg = true;
+        SerialProperties.flow_buffer[0]=  0x0;
+        //Log.i(TAG,"flow_begin ");
+
+    }
+    void flow_end()
+    {
+
+        SerialProperties.flow_start_falg = false;
+        SerialProperties.flow_buffer[0]=  0x0;
+        //Log.i(TAG,"flow_end ");
+    }
+
+    public void PrintBmp(int startx, Bitmap bitmap) throws IOException {
+        // byte[] start1 = { 0x0d,0x0a};
+        byte[] start2 = { 0x1D, 0x76, 0x30, 0x30, 0x00, 0x00, 0x01, 0x00 };
+
+        int width = bitmap.getWidth() + startx;
+        int height = bitmap.getHeight();
+        Bitmap.Config m =bitmap.getConfig();
+        // 332  272  ARGB_8888
+        //Log.e(TAG,"width:  "+width+" height :"+height+"   m:"+ m);
+        if (width > 384)
+            width = 384;
+        int tmp = (width + 7) / 8;
+        byte[] data = new byte[tmp];
+        byte xL = (byte) (tmp % 256);
+        byte xH = (byte) (tmp / 256);
+        start2[4] = xL;
+        start2[5] = xH;
+        start2[6] = (byte) (height % 256);
+        ;
+        start2[7] = (byte) (height / 256);
+        ;
+        mOutputStream.write(start2);
+        for (int i = 0; i < height; i++) {
+
+            for (int x = 0; x < tmp; x++)
+                data[x] = 0;
+            for (int x = startx; x < width; x++) {
+                int pixel = bitmap.getPixel(x - startx, i);
+                if (Color.red(pixel) == 0 || Color.green(pixel) == 0
+                        || Color.blue(pixel) == 0) {
+                    // 高位在左，所以使用128 右移
+                    data[x / 8] += 128 >> (x % 8);// (byte) (128 >> (y % 8));
+                }
+            }
+
+            while ((printer_status & 0x13) != 0) {
+                //Log.e(TAG, "printer_status=" + printer_status);
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                }
+            }
+            mOutputStream.write(data);
+			/*
+			 * try { Thread.sleep(5); } catch (InterruptedException e) { }
+			 */
+        }
+    }
+
+
+    boolean  flow_check_and_Wait(int timeout)
+    {
+
+
+        boolean flag=false;
+
+        Time_Check_Start();
+
+        while(true)
+        {
+            sleep(5);
+            if(SerialProperties.flow_buffer[0]== 0)
+            {
+                return true;
+                //flow_start_falg = false;
+                //Log.e(TAG,"Get flow ready" );
+                //return true ;
+            }
+            sleep(50);
+            if(SerialProperties.flow_buffer[0]== 0x13)//暂停标志
+            {
+
+                if(flag ==false )
+                {
+                    flag=true;
+                   // Log.e(TAG,"Get flow 13" );
+                }
+
+                continue;
+                //flow_start_falg = false;
+
+                //return true ;
+            }
+
+            if(SerialProperties.flow_buffer[0]== 0x11)
+            {
+
+                //Log.e(TAG,"Get flow 11" );
+                SerialProperties.flow_buffer[0]=  0x0;
+                return true;
+                //flow_start_falg = false;
+                //Log.e(TAG,"Get flow ready" );
+                //return true ;
+            }
+
+
+            if(timeout !=0)
+            {
+                if(TimeIsOver(timeout))
+                {
+
+                    //Log.e(TAG,"Get_Printer flow timeout");
+                    return false;
+
+                }
+
+            }
+
+            sleep(50);
+        }
+
+
+    }
+
+    private class WriteThread extends Thread {
+        int  action_code;
+
+
+        public WriteThread(int  code) {
+            action_code = code;
+        }
+
+        public void run() {
+            super.run();
+            byte status;
+            status = Get_Printer_Status() ;
+            PrinterPowerOnAndWaitReady();
+            if(!Warning_When_Not_Normal())
+            {
+                PrinterPowerOff();
+                return;
+            }
+
+
+            lock.acquire();
+            try {
+
+                //Wait_Printer_Ready();
+                switch(action_code)
+                {
+                    case 0:
+
+                        sendPrintWinnings();
+//                        sendCommand(0x0a);
+//                        sendCommand(0x1d,0x56,0x42,0x20);
+//                        sendCommand(0x1d, 0x56, 0x30);
+                        //Log.e("quck2", " print char test"   );
+                        break;
+
+                }
+                // ConsoleActivity.this.sleep(14000);
+
+            } finally {
+                Wait_Printer_Ready();
+                lock.release();
+                PrinterPowerOff();
+                Handler.sendMessage(Handler.obtainMessage(1, 1,0, null));
+            }
+
+        }
+    }
+    private void sendPrintWinnings() {
+
+
+        try {
+            if (mwinningNumbers.size() > 0) {
+            //PrinterPowerOff();
+
+            //PrinterPowerOnAndWaitReady();
+            //PrinterPowerOnAndWaitReady();
+
+                sendCommand(CharSeq.ClearCommand);
+                sendCommand(CharSeq.ClearCommand);
+                Bitmap icon = BitmapFactory.decodeResource(this.getResources(),
+                        R.drawable.gclogoprint);
+                PrintBmp(2, icon);
+                //SendRawFileToUart(R.raw.gclogoprint,new byte[0],0,0);
+                //sendCommand(CharSeq.LineFeed);
+                sendCommand(CharSeq.ClearCommand);
+            //sendCommand(CharSeq.LineFeed);
+            mOutputStream.write("         WINNING NUMBER".getBytes("cp936"));
+            sendCommand(CharSeq.ClearCommand);
+
+                for (DailyGameResource win : mwinningNumbers) {
+
+                    java.util.Date gamedate = win.getDate();
+                    DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                    String date = format.format(gamedate);
+
+
+
+                    mOutputStream.write((" "+win.getGameName() + " [" + date + "]").getBytes("cp936"));
+                    //print.printText((win.getGamename() + " [" + date + "]") , 1);
+                    sendCommand(CharSeq.ClearCommand);
+                    sendCommand(CharSeq.DoubleWeight);
+                    mOutputStream.write(("W:"+win.getResult().getWinningBall1()).getBytes("cp936"));
+                    //print.printText((win.getWinningNumbers()) , 2);
+                    sendCommand(CharSeq.DoubleWeightCancel);
+                    sendCommand(CharSeq.ClearCommand);
+                    if (!win.isGhanaGame()) {
+                        sendCommand(CharSeq.DoubleHeight);
+                        sendCommand(CharSeq.DoubleWeight);
+                        mOutputStream.write(("M:"+win.getResult().getMachineBallString()).getBytes("cp936"));
+                        sendCommand(CharSeq.DoubleWeightCancel);
+                        sendCommand(CharSeq.DoubleHeightCancel);
+                        sendCommand(CharSeq.ClearCommand);
+                    }
+
+                    mOutputStream.write(("--------------------------------").getBytes("cp936"));
+
+
+                }
+                mOutputStream.write(("   www.winnersgoldenchance.com").getBytes("cp936"));
+                sendCommand(CharSeq.LineFeed);
+                sendCommand(CharSeq.LineFeed);
+                sendCommand(CharSeq.ClearCommand);
+
+
+            }
+
+        }
+
+        catch (UnsupportedEncodingException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+    }
+
+
+    //----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
+
