@@ -27,14 +27,14 @@ import com.google.gson.reflect.TypeToken;
 import com.nbbse.mobiprint3.Printer;
 import com.smartdevsolutions.ilottoandroid.ApiResource.AddBetSlipResource;
 import com.smartdevsolutions.ilottoandroid.ApiResource.AddTicketResource;
+import com.smartdevsolutions.ilottoandroid.ApiResource.BetSlipResource;
 import com.smartdevsolutions.ilottoandroid.ApiResource.DeviceResource;
+import com.smartdevsolutions.ilottoandroid.ApiResource.TicketResource;
 import com.smartdevsolutions.ilottoandroid.Barcoder.util.CodeUtils;
 import com.smartdevsolutions.ilottoandroid.UserInterface.BetGridDisplay;
-import com.smartdevsolutions.ilottoandroid.Utility.BetOutput;
 import com.smartdevsolutions.ilottoandroid.Utility.CallService;
 import com.smartdevsolutions.ilottoandroid.Utility.MyApplication;
-import com.smartdevsolutions.ilottoandroid.Utility.TicketInput;
-import com.smartdevsolutions.ilottoandroid.Utility.TicketOutput;
+import com.smartdevsolutions.ilottoandroid.Utility.Tuple;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -330,10 +330,10 @@ public class TicketActivity extends SerialPortActivity {
         String url;
         String debugmessage="";
 
-        private TicketOutput ticketOutput ;
+        private TicketResource ticketOutput ;
 
         PlayGameTask() {
-            this.url = (getString(R.string.service_url) +getString(R.string.service_playgame_controller));
+            this.url = (getString(R.string.service_url) +getString(R.string.service_playgame));
 
         }
 
@@ -345,29 +345,24 @@ public class TicketActivity extends SerialPortActivity {
 
 
                 AddTicketResource myticket = ((MyApplication) getApplication()).getCurrentTicket();
-
+                DeviceResource dev = ((MyApplication) getApplication()).getCurrentTerminal();
 
                 Gson gson = new Gson();
-                Type type = new TypeToken<TicketInput>(){}.getType();
+                Type type = new TypeToken<AddTicketResource>(){}.getType();
                 String json = gson.toJson(myticket, type);
                 CallService mysevice = new CallService(url, json);
-                String response =  mysevice.invokePostService();
-                if(response != ""   )
+                Tuple<Integer, String> response =  mysevice.invokePostService( dev.getToken());
+
+                if(response.item1() == 200   )
                 {
-                    type = new TypeToken<TicketOutput>(){}.getType();
-                    ticketOutput = gson.fromJson(response, type);
-                    if(ticketOutput.getId()!=-100) {
-                        debugmessage = "";
-                        return true;
-                    }
-                    else {
-                        debugmessage = ticketOutput.getCreationMessage();
-                        return false;
-                    }
+                    type = new TypeToken<TicketResource>(){}.getType();
+                    ticketOutput = gson.fromJson(response.item2(), type);
+                   return true;
+
                 }
                 else
                 {
-                    debugmessage += "Poor Network);  byteList.add(Please Check Your Network and Try Again!!!";
+                    debugmessage = "Error "+ response.item1()+": " +response.item2();
                     return false ;
                 }
 
@@ -422,7 +417,7 @@ public class TicketActivity extends SerialPortActivity {
             }
         }
 
-        public  void PrintTicket(TicketOutput ticket)
+        public  void PrintTicket(TicketResource ticket)
         {
            // Handler.sendMessage(Handler.obtainMessage(0, 1,0, null));
             new WriteThread(0, ticket).start();
@@ -963,9 +958,9 @@ public class TicketActivity extends SerialPortActivity {
 
     private class WriteThread extends Thread {
         int  action_code;
-        TicketOutput printticket;
+        TicketResource printticket;
 
-        public WriteThread(int  code, TicketOutput ticket) {
+        public WriteThread(int  code, TicketResource ticket) {
             action_code = code;
             this.printticket = ticket;
         }
@@ -1009,7 +1004,7 @@ public class TicketActivity extends SerialPortActivity {
 
         }
     }
-    private void sendPrintWinnings(TicketOutput ticket) {
+    private void sendPrintWinnings(TicketResource ticket) {
 
 
         try {
@@ -1038,12 +1033,12 @@ public class TicketActivity extends SerialPortActivity {
                 sendCommand(CharSeq.ClearCommand);
 
                 sendCommand(CharSeq.DoubleWeight);
-                mOutputStream.write(("   "+ticket.getGamename()).getBytes("cp936"));
+                mOutputStream.write(("   "+ticket.getGame().getName()).getBytes("cp936"));
                 sendCommand(CharSeq.ClearCommand);
                 mOutputStream.write(("TICKET ID:"+ticket.getId()).getBytes("cp936"));
                 sendCommand(CharSeq.DoubleWeightCancel);
                 sendCommand(CharSeq.ClearCommand);
-                mOutputStream.write(("REG DATE : "+ticket.getDate()).getBytes("cp936"));
+                mOutputStream.write(("REG DATE : "+ticket.getDateRegistered()).getBytes("cp936"));
                 sendCommand(CharSeq.ClearCommand);
                 mOutputStream.write(("CASHIER : "+device.getSerial()).getBytes("cp936"));
 //                sendCommand(CharSeq.ClearCommand);
@@ -1057,22 +1052,22 @@ public class TicketActivity extends SerialPortActivity {
                 sendCommand(CharSeq.ClearCommand);
 
 
-                for (BetOutput bet: ticket.getBets())
+                for (BetSlipResource bet: ticket.getBetslips())
                 {
-                    mOutputStream.write(("NAP :"+ bet.getNap()+ "     STK/LN :#"+bet.getStake_per_line()).getBytes("cp936"));
+                    mOutputStream.write(("NAP :"+ bet.getBetType().getCode()+ "     STK/LN :#"+bet.getStakePerLine()).getBytes("cp936"));
                     sendCommand(CharSeq.ClearCommand);
-                    mOutputStream.write(("LINES :"+ bet.getNo_of_lines()+ "     AMT :#"+bet.getAmount()).getBytes("cp936"));
+                    mOutputStream.write(("LINES :"+ bet.getLines()+ "     AMT :#"+bet.getAmount()).getBytes("cp936"));
                     sendCommand(CharSeq.ClearCommand);
                     sendCommand(CharSeq.DoubleWeight);
-                    mOutputStream.write(("BET1: "+ bet.getStakebet1()).getBytes("cp936"));
+                    mOutputStream.write(("BET1: "+ bet.getBet1String()).getBytes("cp936"));
                     sendCommand(CharSeq.DoubleWeightCancel);
                     sendCommand(CharSeq.ClearCommand);
 
 
-                    if(!bet.getStakebet2().equals(""))
+                    if(!bet.getBet2String().equals(""))
                     {
                         sendCommand(CharSeq.DoubleWeight);
-                        mOutputStream.write(("AG: "+ bet.getStakebet2()).getBytes("cp936"));
+                        mOutputStream.write(("AG: "+ bet.getBet2String()).getBytes("cp936"));
                         sendCommand(CharSeq.DoubleWeightCancel);
                         sendCommand(CharSeq.LineFeed);
                     }

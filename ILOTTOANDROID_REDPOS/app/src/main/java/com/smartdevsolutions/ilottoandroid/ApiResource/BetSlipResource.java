@@ -104,8 +104,9 @@ public class BetSlipResource {
         String returnstake = "";
         for (int i = 0; i < bet1.size()-1; i++)
         {
-            returnstake += String.format("%02d" , i) + "-";
+            returnstake += String.format("%02d" , bet1.get(i) ) + "-";
         }
+        returnstake += String.format("%02d" , bet1.get(bet1.size()-1)) ;
         return returnstake;
     }
 
@@ -114,8 +115,9 @@ public class BetSlipResource {
         String returnstake = "";
         for (int i = 0; i < bet2.size()-1; i++)
         {
-            returnstake += String.format("%02d" , i) + "-";
+            returnstake += String.format("%02d" , bet2.get(i) ) + "-";
         }
+        returnstake += String.format("%02d" , bet2.get(bet2.size()-1)) ;
         return returnstake;
     }
 
